@@ -16,7 +16,16 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/auth', authRouters);
+const PORT = process.env.PORT || 3001; 
 
-app.listen(3000, () => {
-    console.log('Servidor en local');
+app.listen(PORT, () => {
+    console.log(`Servidor en local`); 
+    console.log(`Escuchando en http://localhost:${PORT}`); 
+}).on('error', (err) => { 
+    if (err.code === 'EADDRINUSE') {
+        console.error(`ERROR: El puerto ${PORT} ya está en uso. Por favor, libera el puerto o usa uno diferente.`);
+    } else {
+        console.error(`ERROR al iniciar el servidor:`, err);
+    }
 });
+

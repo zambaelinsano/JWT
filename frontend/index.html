@@ -1,100 +1,132 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Iniciar Sesión</title>
-  <style>
-    :root {
-      --negro: #000000;
-      --gris-oscuro: #1a1a1a;
-      --amarillo: #FFD700;
-      --amarillo-hover: #e6c200;
-      --blanco: #ffffff;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Iniciar Sesión</title>
+<style>
+/* Tu CSS existente aquí */
+ :root {
+--negro: #000000;
+--gris-oscuro: #1a1a1a;
+ --amarillo: #FFD700;
+--amarillo-hover: #e6c200;
+--blanco: #ffffff;
+}
 
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      background: linear-gradient(to bottom right, var(--negro), var(--gris-oscuro));
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Roboto', sans-serif;
-    }
+body {
+   margin: 0;
+ padding: 0;
+ height: 100vh;
+ background: linear-gradient(to bottom right, var(--negro), var(--gris-oscuro));
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ font-family: 'Roboto', sans-serif;
+}
 
-    .container {
-      background: var(--blanco);
-      padding: 2.5rem;
-      border-radius: 1.5rem;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-    }
+.container {
+ background: var(--blanco);
+ padding: 2.5rem;
+ border-radius: 1.5rem;
+ box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+ max-width: 400px;
+ width: 90%;
+ text-align: center;
+}
 
-    h2 {
-      margin-bottom: 1.5rem;
-      color: var(--negro);
-    }
+h2 {
+ margin-bottom: 1.5rem;
+ color: var(--negro);
+}
 
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-    }
+form {
+  display: flex;
+ flex-direction: column;
+ gap: 1.2rem;
+}
 
-    input {
-      padding: 1rem;
-      font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 0.75rem;
-      outline: none;
-    }
+input {
+ padding: 1rem;
+ font-size: 1rem;
+ border: 1px solid #ccc;
+ border-radius: 0.75rem;
+ outline: none;
+}
 
-    .btn {
-      background-color: var(--amarillo);
-      color: var(--negro);
-      font-weight: bold;
-      font-size: 1.5rem;
-      border: none;
-      height: 100px;
-      border-radius: 1rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
+.btn {
+ background-color: var(--amarillo);
+ color: var(--negro);
+ font-weight: bold;
+ font-size: 1.5rem;
+ border: none;
+ height: 100px;
+ border-radius: 1rem;
+ cursor: pointer;
+ transition: background-color 0.3s ease;
+ }
 
-    .btn:hover {
-      background-color: var(--amarillo-hover);
-    }
-    .foot{
-        display: flex;
-        justify-content: space-evenly;
-        align-items: center;
-        text-align: center;
-    }
-    .foot a{
-        color: #e6c200;
-        text-decoration: none;
-        
-    }
-    .foot a:hover{
-        color: #1a1a1a;
-    }
-  </style>
+.btn:hover {
+ background-color: var(--amarillo-hover);
+}
+.foot{
+ display: flex;
+ justify-content: space-evenly;
+ align-items: center;
+ text-align: center;
+}
+.foot a{
+ color: #e6c200;
+ text-decoration: none; 
+}
+.foot a:hover{
+ color: #1a1a1a;
+}
+ </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Iniciar Sesión</h2>
-    <form action="#" method="post">
-      <input type="text" placeholder="Usuario o correo" required />
-      <input type="password" placeholder="Contraseña" required />
-      <button class="btn" type="submit">Iniciar Sesión</button>
-    </form>
-    <div class="foot">
-    <h3>No tienes cuenta?</h3><a href="register.html">Da click aqui</a>
-        </div>
+ <div class="container">
+ <h2>Iniciar Sesión</h2>
+ <form id="loginForm">
+ <input type="text" id="usuario" placeholder="Usuario" required />       <input type="password" id="password" placeholder="Contraseña" required />
+ <button class="btn" type="submit">Iniciar Sesión</button>
+ </form>
+ <div class="foot">
+ <h3>¿No tienes cuenta?</h3><a href="register.html">Da click aquí</a>
+ </div>
 </div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const usuario = document.getElementById('usuario').value; // Capturar el valor del campo 'usuario'
+        const password = document.getElementById('password').value;
+
+        try {
+            const response = await fetch('http://localhost:3001/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ usuario, password }) // Enviar 'usuario' y 'password'
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                localStorage.setItem('jwtToken', data.token);
+                alert('¡Inicio de sesión exitoso!');
+                window.location.href = 'Bienvenida.html';
+            } else {
+                alert('Error al iniciar sesión: ' + (data.message || response.statusText));
+            }
+        } catch (error) {
+            console.error('Error de red o del servidor:', error);
+            alert('No se pudo conectar con el servidor. Inténtalo de nuevo más tarde.');
+        }
+    });
+</script>
+
 </body>
 </html>

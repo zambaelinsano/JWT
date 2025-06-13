@@ -92,6 +92,7 @@
       <input type="text" placeholder="Segundo Nombre" />
       <input type="text" placeholder="Apellido Paterno" required />
       <input type="text" placeholder="Apellido Materno" required />
+      <input type="text" id="usuario" placeholder="Nombre de Usuario" required />
       <input type="password" id="password" placeholder="Password" required />
       <input type="password" id="confirmar" placeholder="Confirmar Password" required />
       <button class="btn" type="submit">Registrarse</button>
@@ -100,16 +101,63 @@
   </div>
 
   <script>
-    function validarPassword() {
-      const pass = document.getElementById('password').value;
-      const confirmar = document.getElementById('confirmar').value;
+     function validarPassword() {
+const pass = document.getElementById('password').value;
+ const confirmar = document.getElementById('confirmarPassword').value;
 
-      if (pass !== confirmar) {
-        alert("Las contraseñas no coinciden.");
-        return false;
-      }
-      return true;
-    }
+ if (pass !== confirmar) {
+ alert("Las contraseñas no coinciden.");
+ return false;
+ }
+ return true;
+ }
+
+    document.getElementById('registerForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        if (!validarPassword()) {
+            return;
+        }
+
+        const nombre = document.getElementById('nombre').value;
+        const segundoNombre = document.getElementById('segundoNombre').value;
+        const apellidoPaterno = document.getElementById('apellidoPaterno').value;
+        const apellidoMaterno = document.getElementById('apellidoMaterno').value;
+        const usuario = document.getElementById('usuario').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const response = await fetch('http://localhost:3001/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    nombre,
+                    segundo_nombre: segundoNombre,
+                    apellido_paterno: apellidoPaterno,
+                    apellido_materno: apellidoMaterno,
+                    usuario,
+                    password
+                })
+            });
+
+            const data = await response.text(); // El backend envía un texto
+
+            if (response.ok) {
+                // Notificación de éxito
+                alert('¡Usuario registrado exitosamente!');
+                window.location.href = 'index.html'; // Redirige a la página de inicio de sesión
+            } else {
+                // Notificación de error con el mensaje del servidor
+                alert('Error al registrar usuario: ' + data);
+            }
+        } catch (error) {
+            console.error('Error de red o del servidor:', error);
+            // Notificación de error de conexión
+            alert('No se pudo conectar con el servidor. Inténtalo de nuevo más tarde.');
+        }
+    });
   </script>
 </body>
 </html>
